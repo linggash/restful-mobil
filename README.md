@@ -20,8 +20,7 @@ Request :
   "security" : "integer",
   "convenience" : "integer",
   "appearance" : "integer",
-  "efficiency" : "integer",
-  "quantity" : "integer"
+  "efficiency" : "integer"
 }
 ```
 
@@ -41,7 +40,6 @@ Response :
     "convenience" : "integer",
     "appearance" : "integer",
     "efficiency" : "integer",
-    "quantity" : "integer",
     "createdAt" : "date",
     "updatedAt" : "date"
   }
@@ -72,7 +70,6 @@ Response :
     "convenience" : "integer",
     "appearance" : "integer",
     "efficiency" : "integer",
-    "quantity" : "integer",
     "createdAt" : "date",
     "updatedAt" : "date"
   }
@@ -98,8 +95,7 @@ Request :
   "security" : "integer",
   "convenience" : "integer",
   "appearance" : "integer",
-  "efficiency" : "integer",
-  "quantity" : "integer"
+  "efficiency" : "integer"
 }
 ```
 
@@ -119,7 +115,6 @@ Response :
     "convenience" : "integer",
     "appearance" : "integer",
     "efficiency" : "integer",
-    "quantity" : "integer",
     "createdAt" : "date",
     "updatedAt" : "date"
   }
@@ -154,7 +149,6 @@ Response :
       "convenience" : "integer",
       "appearance" : "integer",
       "efficiency" : "integer",
-      "quantity" : "integer",
       "createdAt" : "date",
       "updatedAt" : "date"
     },
