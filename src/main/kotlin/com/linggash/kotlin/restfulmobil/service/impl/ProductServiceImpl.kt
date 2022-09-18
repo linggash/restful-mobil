@@ -1,11 +1,13 @@
 package com.linggash.kotlin.restfulmobil.service.impl
 
 import com.linggash.kotlin.restfulmobil.entity.Product
+import com.linggash.kotlin.restfulmobil.error.NotFoundException
 import com.linggash.kotlin.restfulmobil.model.CreateProductRequest
 import com.linggash.kotlin.restfulmobil.model.ProductResponse
 import com.linggash.kotlin.restfulmobil.repository.ProductRepository
 import com.linggash.kotlin.restfulmobil.service.ProductService
 import com.linggash.kotlin.restfulmobil.validation.ValidationUtil
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -34,6 +36,19 @@ class ProductServiceImpl(
 
         productRepository.save(product)
 
+        return convertProductToProductResponse(product)
+    }
+
+    override fun get(id: String): ProductResponse {
+        val product = productRepository.findByIdOrNull(id)
+        if(product == null){
+            throw NotFoundException()
+        }else{
+            return convertProductToProductResponse(product)
+        }
+    }
+
+    private fun convertProductToProductResponse(product: Product): ProductResponse {
         return ProductResponse(
             id = product.id,
             name = product.name,
