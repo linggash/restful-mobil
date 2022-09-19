@@ -14,32 +14,32 @@ data class Product (
     val id: String,
 
     @Column(name="name")
-    val name: String,
+    var name: String,
 
     @Column(name="brand")
-    val brand: String,
+    var brand: String,
 
     @Column(name="price")
-    val price: Long,
+    var price: Long,
 
     @Column(name="performance")
-    val performance: Int,
+    var performance: Int,
 
     @Column(name="security")
-    val security: Int,
+    var security: Int,
 
     @Column(name="convenience")
-    val convenience: Int,
+    var convenience: Int,
 
     @Column(name="appearance")
-    val appearance: Int,
+    var appearance: Int,
 
     @Column(name="efficiency")
-    val efficiency: Int,
+    var efficiency: Int,
 
     @Column(name="created_at")
-    val createdAt: Date,
+    var createdAt: Date,
 
     @Column(name="updated_at")
-    val updatedAt: Date?
+    var updatedAt: Date?
 )

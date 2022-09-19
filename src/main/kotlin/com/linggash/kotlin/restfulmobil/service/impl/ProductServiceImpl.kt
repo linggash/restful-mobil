@@ -4,6 +4,7 @@ import com.linggash.kotlin.restfulmobil.entity.Product
 import com.linggash.kotlin.restfulmobil.error.NotFoundException
 import com.linggash.kotlin.restfulmobil.model.CreateProductRequest
 import com.linggash.kotlin.restfulmobil.model.ProductResponse
+import com.linggash.kotlin.restfulmobil.model.UpdateProductRequest
 import com.linggash.kotlin.restfulmobil.repository.ProductRepository
 import com.linggash.kotlin.restfulmobil.service.ProductService
 import com.linggash.kotlin.restfulmobil.validation.ValidationUtil
@@ -40,11 +41,45 @@ class ProductServiceImpl(
     }
 
     override fun get(id: String): ProductResponse {
+        val product = findProductByIdOrThrowNotFound(id)
+        return convertProductToProductResponse(product)
+    }
+
+    override fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse {
+        val product = findProductByIdOrThrowNotFound(id)
+
+        validationUtil.validate(updateProductRequest)
+
+        product.apply {
+            name = updateProductRequest.name!!
+            price = updateProductRequest.price!!
+            brand = updateProductRequest.brand!!
+            price = updateProductRequest.price!!
+            performance = updateProductRequest.performance!!
+            security = updateProductRequest.security!!
+            convenience = updateProductRequest.convenience!!
+            appearance = updateProductRequest.appearance!!
+            efficiency = updateProductRequest.efficiency!!
+            updatedAt = Date()
+        }
+
+        productRepository.save(product)
+
+        return convertProductToProductResponse(product)
+    }
+
+    override fun delete(id: String) {
+        val product = findProductByIdOrThrowNotFound(id)
+        productRepository.delete(product)
+    }
+
+    private fun findProductByIdOrThrowNotFound(id: String): Product {
         val product = productRepository.findByIdOrNull(id)
+
         if(product == null){
             throw NotFoundException()
-        }else{
-            return convertProductToProductResponse(product)
+        }else {
+            return product
         }
     }
 
