@@ -41,5 +41,8 @@ data class Product (
     var createdAt: Date,
 
     @Column(name="updated_at")
-    var updatedAt: Date?
+    var updatedAt: Date?,
+
+    @Column(name="image")
+    var image: String?
 )

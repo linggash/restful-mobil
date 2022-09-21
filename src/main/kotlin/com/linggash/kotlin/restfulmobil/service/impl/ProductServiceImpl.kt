@@ -1,16 +1,21 @@
 package com.linggash.kotlin.restfulmobil.service.impl
 
 import com.linggash.kotlin.restfulmobil.entity.Product
+import com.linggash.kotlin.restfulmobil.error.DataExistException
 import com.linggash.kotlin.restfulmobil.error.NotFoundException
 import com.linggash.kotlin.restfulmobil.model.CreateProductRequest
+import com.linggash.kotlin.restfulmobil.model.ListProductRequest
 import com.linggash.kotlin.restfulmobil.model.ProductResponse
 import com.linggash.kotlin.restfulmobil.model.UpdateProductRequest
 import com.linggash.kotlin.restfulmobil.repository.ProductRepository
 import com.linggash.kotlin.restfulmobil.service.ProductService
 import com.linggash.kotlin.restfulmobil.validation.ValidationUtil
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.stream.Collectors
+import javax.validation.ConstraintViolationException
 
 @Service
 class ProductServiceImpl(
@@ -20,6 +25,12 @@ class ProductServiceImpl(
 
     override fun create(createProductRequest: CreateProductRequest): ProductResponse {
         validationUtil.validate(createProductRequest)
+
+        val vali = productRepository.findByIdOrNull(createProductRequest.id)
+
+        if (vali != null){
+            throw DataExistException()
+        }
 
         val product = Product(
             id = createProductRequest.id!!,
@@ -32,8 +43,11 @@ class ProductServiceImpl(
             appearance = createProductRequest.appearance!!,
             efficiency = createProductRequest.efficiency!!,
             createdAt = Date(),
-            updatedAt = null
+            updatedAt = null,
+            image = null
         )
+
+
 
         productRepository.save(product)
 
@@ -71,6 +85,12 @@ class ProductServiceImpl(
     override fun delete(id: String) {
         val product = findProductByIdOrThrowNotFound(id)
         productRepository.delete(product)
+    }
+
+    override fun list(listProductRequest: ListProductRequest): List<ProductResponse> {
+        val page = productRepository.findAll(PageRequest.of(listProductRequest.page, listProductRequest.size))
+        val products:List<Product> = page.get().collect(Collectors.toList())
+        return products.map { convertProductToProductResponse(it)}
     }
 
     private fun findProductByIdOrThrowNotFound(id: String): Product {

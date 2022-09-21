@@ -1,5 +1,6 @@
 package com.linggash.kotlin.restfulmobil.controller
 
+import com.linggash.kotlin.restfulmobil.error.DataExistException
 import com.linggash.kotlin.restfulmobil.error.NotFoundException
 import com.linggash.kotlin.restfulmobil.model.WebResponse
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -24,6 +25,15 @@ class ErrorController {
             code = 404,
             status = "NOT FOUND",
             data = "Not found"
+        )
+    }
+
+    @ExceptionHandler(value = [DataExistException::class])
+    fun dataExist(dataExistException: DataExistException): WebResponse<String> {
+        return WebResponse(
+            code = 409,
+            status = "Data Exist",
+            data = "data exist"
         )
     }
 }
