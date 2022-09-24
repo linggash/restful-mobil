@@ -3,16 +3,14 @@ package com.linggash.kotlin.restfulmobil.service.impl
 import com.linggash.kotlin.restfulmobil.entity.Product
 import com.linggash.kotlin.restfulmobil.error.DataExistException
 import com.linggash.kotlin.restfulmobil.error.NotFoundException
-import com.linggash.kotlin.restfulmobil.model.CreateProductRequest
-import com.linggash.kotlin.restfulmobil.model.ListProductRequest
-import com.linggash.kotlin.restfulmobil.model.ProductResponse
-import com.linggash.kotlin.restfulmobil.model.UpdateProductRequest
+import com.linggash.kotlin.restfulmobil.model.*
 import com.linggash.kotlin.restfulmobil.repository.ProductRepository
 import com.linggash.kotlin.restfulmobil.service.ProductService
 import com.linggash.kotlin.restfulmobil.validation.ValidationUtil
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 import java.util.stream.Collectors
 import javax.validation.ConstraintViolationException
@@ -91,6 +89,18 @@ class ProductServiceImpl(
         val page = productRepository.findAll(PageRequest.of(listProductRequest.page, listProductRequest.size))
         val products:List<Product> = page.get().collect(Collectors.toList())
         return products.map { convertProductToProductResponse(it)}
+    }
+
+    override fun uploadImage(uploadImageRequest: UploadImageRequest) {
+        val product = findProductByIdOrThrowNotFound(uploadImageRequest.id)
+
+        val downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/images/").path(uploadImageRequest.id).path(".jpg").toUriString()
+
+        product.apply {
+            image = downloadUrl
+            updatedAt = Date()
+        }
+        productRepository.save(product)
     }
 
     private fun findProductByIdOrThrowNotFound(id: String): Product {

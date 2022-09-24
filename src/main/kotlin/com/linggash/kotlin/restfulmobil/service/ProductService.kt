@@ -1,9 +1,6 @@
 package com.linggash.kotlin.restfulmobil.service
 
-import com.linggash.kotlin.restfulmobil.model.CreateProductRequest
-import com.linggash.kotlin.restfulmobil.model.ListProductRequest
-import com.linggash.kotlin.restfulmobil.model.ProductResponse
-import com.linggash.kotlin.restfulmobil.model.UpdateProductRequest
+import com.linggash.kotlin.restfulmobil.model.*
 
 interface ProductService {
 
@@ -13,7 +10,9 @@ interface ProductService {
 
     fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse
 
-    fun delete(id: String,)
+    fun delete(id: String)
 
     fun list(listProductRequest: ListProductRequest): List<ProductResponse>
+
+    fun uploadImage(uploadImageRequest: UploadImageRequest)
 }
