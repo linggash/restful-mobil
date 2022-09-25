@@ -113,4 +113,26 @@ class ProductController(val productService: ProductService) {
             data = "image URL : $downloadUrl"
         )
     }
+
+    @GetMapping(
+        value = ["/api/products/wp"],
+        produces = ["application/json"]
+    )
+    fun weightedProducts(@RequestParam harga: Int,
+                         @RequestParam performa: Int,
+                         @RequestParam keamanan: Int,
+                         @RequestParam kenyamanan: Int,
+                         @RequestParam tampilan: Int,
+                         @RequestParam efisiensi: Int,
+                         @RequestParam(value= "page", defaultValue = "0") page: Int,
+                         @RequestParam(value = "size", defaultValue = "10") size:Int)
+    :WebResponse<List<WeightedProductResponse>> {
+        val request = WeightedProductRequest(harga, performa, keamanan, kenyamanan, tampilan, efisiensi, page, size)
+        val response = productService.weightedProduct(request)
+        return WebResponse(
+            code = 200,
+            status = "OK",
+            data = response
+        )
+    }
 }

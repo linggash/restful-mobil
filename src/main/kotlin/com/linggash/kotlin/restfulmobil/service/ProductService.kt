@@ -15,4 +15,6 @@ interface ProductService {
     fun list(listProductRequest: ListProductRequest): List<ProductResponse>
 
     fun uploadImage(uploadImageRequest: UploadImageRequest)
+
+    fun weightedProduct(weightedProductRequest: WeightedProductRequest): List<WeightedProductResponse>
 }

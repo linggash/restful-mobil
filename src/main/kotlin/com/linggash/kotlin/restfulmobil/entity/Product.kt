@@ -44,5 +44,8 @@ data class Product (
     var updatedAt: Date?,
 
     @Column(name="image")
-    var image: String?
+    var image: String?,
+
+    @Column(name="wp")
+    var wp: Double?
 )

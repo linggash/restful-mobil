@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 import java.util.stream.Collectors
 import javax.validation.ConstraintViolationException
+import kotlin.math.pow
 
 @Service
 class ProductServiceImpl(
@@ -42,7 +43,8 @@ class ProductServiceImpl(
             efficiency = createProductRequest.efficiency!!,
             createdAt = Date(),
             updatedAt = null,
-            image = null
+            image = null,
+            wp = null
         )
 
 
@@ -86,8 +88,10 @@ class ProductServiceImpl(
     }
 
     override fun list(listProductRequest: ListProductRequest): List<ProductResponse> {
+
         val page = productRepository.findAll(PageRequest.of(listProductRequest.page, listProductRequest.size))
         val products:List<Product> = page.get().collect(Collectors.toList())
+
         return products.map { convertProductToProductResponse(it)}
     }
 
@@ -101,6 +105,56 @@ class ProductServiceImpl(
             updatedAt = Date()
         }
         productRepository.save(product)
+    }
+
+    override fun weightedProduct(weightedProductRequest: WeightedProductRequest): List<WeightedProductResponse> {
+
+        val jumlahBobot = weightedProductRequest.harga + weightedProductRequest.performa + weightedProductRequest.keamanan +
+                weightedProductRequest.kenyamanan + weightedProductRequest.tampilan + weightedProductRequest.efisiensi
+
+        val harga = weightedProductRequest.harga.toDouble() / jumlahBobot.toDouble() * -1
+        val performa = weightedProductRequest.performa.toDouble() / jumlahBobot.toDouble()
+        val keamanan = weightedProductRequest.keamanan.toDouble() / jumlahBobot.toDouble()
+        val kenyamanan = weightedProductRequest.kenyamanan.toDouble() / jumlahBobot.toDouble()
+        val tampilan = weightedProductRequest.tampilan.toDouble() / jumlahBobot.toDouble()
+        val efisiensi = weightedProductRequest.efisiensi.toDouble() / jumlahBobot.toDouble()
+        val page = productRepository.findAll()
+        var products:List<Product> = page
+        var vectorS: Double
+        var vectorY: Double = 0.0
+
+        page.forEach {
+            vectorS = (it.price.toDouble().pow(harga.toDouble()) * (it.performance.toDouble().pow(performa.toDouble())) *
+                    (it.security.toDouble().pow(keamanan)) * (it.convenience.toDouble().pow(kenyamanan.toDouble())) *
+                    it.appearance.toDouble().pow(tampilan.toDouble()) * it.efficiency.toDouble().pow(efisiensi.toDouble()))
+            vectorY += vectorS
+            it.wp = vectorS
+        }
+
+        products.forEach {
+            val hasil = it.wp!! / vectorY
+            it.wp = hasil
+        }
+
+        products = products.sortedByDescending { it.wp }
+
+//        if (weightedProductRequest.page == 0){
+//            val size = products.size - weightedProductRequest.size
+//            products = products.dropLast(size)
+//        }
+//        else{
+//            val page = products.size % weightedProductRequest.size
+//
+//            if (weightedProductRequest.page < page){
+//                products = products.drop(weightedProductRequest.size * weightedProductRequest.page)
+//                products = products.dropLast(page)
+//            }else {
+//                throw  NotFoundException()
+//            }
+//
+//        }
+
+        return products.map { convertWeightedProductToProductResponse(it)}
     }
 
     private fun findProductByIdOrThrowNotFound(id: String): Product {
@@ -124,6 +178,23 @@ class ProductServiceImpl(
             convenience = product.convenience,
             appearance = product.appearance,
             efficiency = product.efficiency,
+            createdAt = product.createdAt,
+            updatedAt = product.updatedAt
+        )
+    }
+    private fun convertWeightedProductToProductResponse(product: Product): WeightedProductResponse {
+        return WeightedProductResponse(
+            id = product.id,
+            name = product.name,
+            brand = product.brand,
+            price = product.price,
+            performance = product.performance,
+            security = product.security,
+            convenience = product.convenience,
+            appearance = product.appearance,
+            efficiency = product.efficiency,
+            wp = product.wp,
+            image = product.image,
             createdAt = product.createdAt,
             updatedAt = product.updatedAt
         )
